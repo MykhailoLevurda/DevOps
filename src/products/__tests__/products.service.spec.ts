@@ -33,7 +33,12 @@ describe('ProductsService', () => {
   describe('create', () => {
     it('should create and return a new product', async () => {
       // Arrange
-      const dto = { name: 'Testovaci produkt', description: 'Popis', price: 99.99, stockQuantity: 10 };
+      const dto = {
+        name: 'Testovaci produkt',
+        description: 'Popis',
+        price: 99.99,
+        stockQuantity: 10,
+      };
       const product = { id: 'uuid-1', ...dto };
       mockProductRepository.create.mockReturnValue(product);
       mockProductRepository.save.mockResolvedValue(product);
@@ -69,7 +74,12 @@ describe('ProductsService', () => {
   describe('findOne', () => {
     it('should return product when found', async () => {
       // Arrange
-      const product = { id: 'uuid-1', name: 'Produkt A', price: 10.0, stockQuantity: 5 };
+      const product = {
+        id: 'uuid-1',
+        name: 'Produkt A',
+        price: 10.0,
+        stockQuantity: 5,
+      };
       mockProductRepository.findOne.mockResolvedValue(product);
 
       // Act
@@ -84,14 +94,21 @@ describe('ProductsService', () => {
       mockProductRepository.findOne.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.findOne('neexistuje')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('neexistuje')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('update', () => {
     it('should update and return product', async () => {
       // Arrange
-      const existing = { id: 'uuid-1', name: 'Stary nazev', price: 10.0, stockQuantity: 5 };
+      const existing = {
+        id: 'uuid-1',
+        name: 'Stary nazev',
+        price: 10.0,
+        stockQuantity: 5,
+      };
       const dto = { name: 'Novy nazev', price: 15.0 };
       const updated = { ...existing, ...dto };
       mockProductRepository.findOne.mockResolvedValue(existing);
@@ -110,7 +127,9 @@ describe('ProductsService', () => {
       mockProductRepository.findOne.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.update('neexistuje', { name: 'Test' })).rejects.toThrow(NotFoundException);
+      await expect(
+        service.update('neexistuje', { name: 'Test' }),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -133,16 +152,26 @@ describe('ProductsService', () => {
       mockProductRepository.findOne.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.remove('neexistuje')).rejects.toThrow(NotFoundException);
+      await expect(service.remove('neexistuje')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('decrementStock', () => {
     it('should reduce stockQuantity by given amount', async () => {
       // Arrange
-      const product = { id: 'uuid-1', name: 'Produkt A', price: 10.0, stockQuantity: 10 };
+      const product = {
+        id: 'uuid-1',
+        name: 'Produkt A',
+        price: 10.0,
+        stockQuantity: 10,
+      };
       mockProductRepository.findOne.mockResolvedValue(product);
-      mockProductRepository.save.mockResolvedValue({ ...product, stockQuantity: 7 });
+      mockProductRepository.save.mockResolvedValue({
+        ...product,
+        stockQuantity: 7,
+      });
 
       // Act
       await service.decrementStock('uuid-1', 3);
@@ -158,7 +187,9 @@ describe('ProductsService', () => {
       mockProductRepository.findOne.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.decrementStock('neexistuje', 1)).rejects.toThrow(NotFoundException);
+      await expect(service.decrementStock('neexistuje', 1)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });
