@@ -1,8 +1,24 @@
+# Staging
 apiVersion: v1
 kind: Service
 metadata:
   name: mini-eshop
-  namespace: mini-eshop
+  namespace: staging
+spec:
+  selector:
+    app: mini-eshop
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: ClusterIP
+---
+# Production
+apiVersion: v1
+kind: Service
+metadata:
+  name: mini-eshop
+  namespace: production
 spec:
   selector:
     app: mini-eshop

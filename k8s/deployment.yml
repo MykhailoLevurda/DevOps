@@ -1,10 +1,11 @@
+# Staging - 1 replika
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mini-eshop
-  namespace: mini-eshop
+  namespace: staging
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: mini-eshop
@@ -42,3 +43,49 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "250m"
+---
+# Production - 2 repliky
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mini-eshop
+  namespace: production
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mini-eshop
+  template:
+    metadata:
+      labels:
+        app: mini-eshop
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/mykhailolevurda/devops:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: mini-eshop-config
+            - secretRef:
+                name: mini-eshop-secrets
+          readinessProbe:
+            httpGet:
+              path: /products
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /products
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
