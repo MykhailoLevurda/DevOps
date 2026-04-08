@@ -34,7 +34,11 @@ describe('UsersService', () => {
   describe('create', () => {
     it('should hash password before saving', async () => {
       // Arrange
-      const dto = { email: 'test@example.com', password: 'plaintext123', role: Role.CUSTOMER };
+      const dto = {
+        email: 'test@example.com',
+        password: 'plaintext123',
+        role: Role.CUSTOMER,
+      };
       const savedUser = { id: 'uuid-1', email: dto.email, role: Role.CUSTOMER };
       mockUserRepository.findOne.mockResolvedValue(null);
       mockUserRepository.create.mockReturnValue(savedUser);
@@ -44,7 +48,10 @@ describe('UsersService', () => {
       const result = await service.create(dto);
 
       // Assert
-      const createdWith = mockUserRepository.create.mock.calls[0][0];
+      const calls = mockUserRepository.create.mock.calls as Array<
+        [{ password: string }]
+      >;
+      const createdWith = calls[0][0];
       expect(createdWith.password).not.toBe('plaintext123');
       expect(createdWith.password).toBeDefined();
       expect(result).toEqual(savedUser);
@@ -52,8 +59,15 @@ describe('UsersService', () => {
 
     it('should throw ConflictException when email already exists', async () => {
       // Arrange
-      const dto = { email: 'existing@example.com', password: 'pass123', role: Role.CUSTOMER };
-      mockUserRepository.findOne.mockResolvedValue({ id: 'uuid-1', email: dto.email });
+      const dto = {
+        email: 'existing@example.com',
+        password: 'pass123',
+        role: Role.CUSTOMER,
+      };
+      mockUserRepository.findOne.mockResolvedValue({
+        id: 'uuid-1',
+        email: dto.email,
+      });
 
       // Act & Assert
       await expect(service.create(dto)).rejects.toThrow(ConflictException);
@@ -63,14 +77,22 @@ describe('UsersService', () => {
       // Arrange
       const dto = { email: 'new@example.com', password: 'pass123' };
       mockUserRepository.findOne.mockResolvedValue(null);
-      mockUserRepository.create.mockImplementation((data) => ({ ...data, id: 'uuid-1' }));
-      mockUserRepository.save.mockImplementation((user) => Promise.resolve(user));
+      mockUserRepository.create.mockImplementation((data: Partial<User>) => ({
+        ...data,
+        id: 'uuid-1',
+      }));
+      mockUserRepository.save.mockImplementation((user: User) =>
+        Promise.resolve(user),
+      );
 
       // Act
       await service.create(dto);
 
       // Assert
-      const createdWith = mockUserRepository.create.mock.calls[0][0];
+      const calls = mockUserRepository.create.mock.calls as Array<
+        [{ role: Role }]
+      >;
+      const createdWith = calls[0][0];
       expect(createdWith.role).toBe(Role.CUSTOMER);
     });
   });
@@ -78,7 +100,11 @@ describe('UsersService', () => {
   describe('findOne', () => {
     it('should return user when found', async () => {
       // Arrange
-      const user = { id: 'uuid-1', email: 'test@example.com', role: Role.CUSTOMER };
+      const user = {
+        id: 'uuid-1',
+        email: 'test@example.com',
+        role: Role.CUSTOMER,
+      };
       mockUserRepository.findOne.mockResolvedValue(user);
 
       // Act
@@ -93,7 +119,9 @@ describe('UsersService', () => {
       mockUserRepository.findOne.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.findOne('nonexistent-id')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('nonexistent-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -134,7 +162,9 @@ describe('UsersService', () => {
       mockUserRepository.findOne.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.remove('nonexistent-id')).rejects.toThrow(NotFoundException);
+      await expect(service.remove('nonexistent-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

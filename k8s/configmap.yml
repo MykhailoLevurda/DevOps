@@ -1,10 +1,23 @@
+# Staging
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: mini-eshop-config
-  namespace: mini-eshop
+  namespace: staging
+data:
+  NODE_ENV: staging
+  DB_HOST: postgres-svc
+  DB_PORT: "5432"
+  DB_NAME: eshop_staging
+---
+# Production
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mini-eshop-config
+  namespace: production
 data:
   NODE_ENV: production
   DB_HOST: postgres-svc
   DB_PORT: "5432"
-  DB_NAME: eshop
+  DB_NAME: eshop_production
