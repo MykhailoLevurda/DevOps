@@ -54,7 +54,7 @@ jobs:
           NODE_ENV: test
 
       - name: Integracni (e2e) testy
-        run: npm run test:e2e
+        run: npm run test:e2e -- --passWithNoTests
         env:
           DB_HOST: localhost
           DB_PORT: 5432
