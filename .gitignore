@@ -1,0 +1,21 @@
+# dependencies
+/node_modules
+
+# compiled output
+/dist
+
+# environment variables
+.env
+.env.*
+!.env.example
+
+# coverage
+/coverage
+
+# logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
