@@ -101,22 +101,25 @@ describe('OrdersService', () => {
       // Arrange
       const dto = { items: [{ productId: 'prod-uuid', quantity: 2 }] };
       const product = { id: 'prod-uuid', price: 49.99, stockQuantity: 10 };
-      mockProductsService.findOne.mockResolvedValue(product);
-      mockDataSource.transaction.mockImplementation(
-        async (cb: (manager: object) => Promise<Order>) => {
-          return cb({});
-        },
-      );
-      mockOrderRepository.create.mockReturnValue({
-        id: 'order-uuid',
-        status: OrderStatus.PENDING,
-        items: [],
-      });
-      mockOrderRepository.save.mockResolvedValue({
+      const savedOrder = {
         id: 'order-uuid',
         totalPrice: 99.98,
         items: [{ productId: 'prod-uuid', quantity: 2, unitPrice: 49.99 }],
+      };
+      mockProductsService.findOne.mockResolvedValue(product);
+      mockOrderRepository.create.mockReturnValue({
+        id: 'order-uuid',
+        items: [],
       });
+      mockDataSource.transaction.mockImplementation(
+        async (cb: (manager: object) => Promise<Order>) => {
+          const manager = {
+            save: jest.fn().mockResolvedValue({ id: 'order-uuid' }),
+            findOne: jest.fn().mockResolvedValue(savedOrder),
+          };
+          return cb(manager);
+        },
+      );
 
       // Act
       const result = await service.create('user-uuid', dto);
@@ -133,18 +136,23 @@ describe('OrdersService', () => {
           { productId: 'prod-2', quantity: 1 },
         ],
       };
+      const savedOrder = { id: 'order-uuid', totalPrice: 50.0, items: [] };
       mockProductsService.findOne
         .mockResolvedValueOnce({ id: 'prod-1', price: 10.0, stockQuantity: 5 })
         .mockResolvedValueOnce({ id: 'prod-2', price: 30.0, stockQuantity: 5 });
-      mockDataSource.transaction.mockImplementation(
-        async (cb: (manager: object) => Promise<Order>) => cb({}),
-      );
-      mockOrderRepository.create.mockReturnValue({ id: 'order-uuid', items: [] });
-      mockOrderRepository.save.mockResolvedValue({
+      mockOrderRepository.create.mockReturnValue({
         id: 'order-uuid',
-        totalPrice: 50.0,
         items: [],
       });
+      mockDataSource.transaction.mockImplementation(
+        async (cb: (manager: object) => Promise<Order>) => {
+          const manager = {
+            save: jest.fn().mockResolvedValue({ id: 'order-uuid' }),
+            findOne: jest.fn().mockResolvedValue(savedOrder),
+          };
+          return cb(manager);
+        },
+      );
 
       // Act
       const result = await service.create('user-uuid', dto);
@@ -187,7 +195,11 @@ describe('OrdersService', () => {
 
     it('should allow PENDING -> CANCELLED transition', async () => {
       // Arrange
-      const order = { id: 'order-uuid', status: OrderStatus.PENDING, items: [] };
+      const order = {
+        id: 'order-uuid',
+        status: OrderStatus.PENDING,
+        items: [],
+      };
       mockOrderRepository.findOne.mockResolvedValue(order);
       mockOrderRepository.save.mockResolvedValue({
         ...order,
@@ -227,7 +239,11 @@ describe('OrdersService', () => {
 
     it('should allow SHIPPED -> DELIVERED transition', async () => {
       // Arrange
-      const order = { id: 'order-uuid', status: OrderStatus.SHIPPED, items: [] };
+      const order = {
+        id: 'order-uuid',
+        status: OrderStatus.SHIPPED,
+        items: [],
+      };
       mockOrderRepository.findOne.mockResolvedValue(order);
       mockOrderRepository.save.mockResolvedValue({
         ...order,
@@ -247,7 +263,11 @@ describe('OrdersService', () => {
 
     it('should throw UnprocessableEntityException for SHIPPED -> CANCELLED', async () => {
       // Arrange
-      const order = { id: 'order-uuid', status: OrderStatus.SHIPPED, items: [] };
+      const order = {
+        id: 'order-uuid',
+        status: OrderStatus.SHIPPED,
+        items: [],
+      };
       mockOrderRepository.findOne.mockResolvedValue(order);
 
       // Act & Assert
@@ -308,8 +328,14 @@ describe('OrdersService', () => {
 
       // Assert
       expect(mockProductsService.decrementStock).toHaveBeenCalledTimes(2);
-      expect(mockProductsService.decrementStock).toHaveBeenCalledWith('prod-1', 2);
-      expect(mockProductsService.decrementStock).toHaveBeenCalledWith('prod-2', 1);
+      expect(mockProductsService.decrementStock).toHaveBeenCalledWith(
+        'prod-1',
+        2,
+      );
+      expect(mockProductsService.decrementStock).toHaveBeenCalledWith(
+        'prod-2',
+        1,
+      );
     });
 
     it('should NOT decrement stock when transitioning to non-PAID status', async () => {
@@ -346,7 +372,11 @@ describe('OrdersService', () => {
     it('should throw ForbiddenException when non-ADMIN tries to update status', async () => {
       // Arrange
       const customerUser = { id: 'customer-uuid', role: Role.CUSTOMER };
-      const order = { id: 'order-uuid', status: OrderStatus.PENDING, items: [] };
+      const order = {
+        id: 'order-uuid',
+        status: OrderStatus.PENDING,
+        items: [],
+      };
       mockOrderRepository.findOne.mockResolvedValue(order);
 
       // Act & Assert
