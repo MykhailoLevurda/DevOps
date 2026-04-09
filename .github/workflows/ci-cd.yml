@@ -123,9 +123,15 @@ jobs:
           kubectl apply -f k8s/namespace.yml
           kubectl apply -f k8s/configmap.yml
           kubectl apply -f k8s/secret.yml
+          kubectl apply -f k8s/postgres-pvc.yml
+          kubectl apply -f k8s/postgres-deployment.yml
+          kubectl apply -f k8s/postgres-service.yml
           kubectl apply -f k8s/deployment.yml
           kubectl apply -f k8s/service.yml
           kubectl apply -f k8s/ingress.yml
+
+      - name: Pockej na rollout Postgres (staging)
+        run: kubectl rollout status deployment/postgres -n staging --timeout=120s
 
       - name: Pockej na rollout (staging)
         run: kubectl rollout status deployment/mini-eshop -n staging --timeout=120s
@@ -154,9 +160,15 @@ jobs:
           kubectl apply -f k8s/namespace.yml
           kubectl apply -f k8s/configmap.yml
           kubectl apply -f k8s/secret.yml
+          kubectl apply -f k8s/postgres-pvc.yml
+          kubectl apply -f k8s/postgres-deployment.yml
+          kubectl apply -f k8s/postgres-service.yml
           kubectl apply -f k8s/deployment.yml
           kubectl apply -f k8s/service.yml
           kubectl apply -f k8s/ingress.yml
+
+      - name: Pockej na rollout Postgres (production)
+        run: kubectl rollout status deployment/postgres -n production --timeout=120s
 
       - name: Pockej na rollout (production)
         run: kubectl rollout status deployment/mini-eshop -n production --timeout=120s

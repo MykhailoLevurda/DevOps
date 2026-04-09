@@ -1,0 +1,25 @@
+# Staging
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-svc
+  namespace: staging
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+# Production
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-svc
+  namespace: production
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
