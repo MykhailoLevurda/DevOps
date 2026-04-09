@@ -110,6 +110,7 @@ jobs:
     needs: docker-build-push
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    continue-on-error: true
     environment: staging
 
     steps:
@@ -147,6 +148,7 @@ jobs:
     needs: deploy-staging
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    continue-on-error: true
     environment: production
 
     steps:
