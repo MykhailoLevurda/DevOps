@@ -5,6 +5,7 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { Role } from '../../common/enums/role.enum';
 
 export class CreateUserDto {
@@ -15,7 +16,10 @@ export class CreateUserDto {
   @MinLength(6)
   password: string;
 
-  @IsEnum(Role)
   @IsOptional()
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? (value.toUpperCase() as Role) : value,
+  )
+  @IsEnum(Role)
   role?: Role;
 }
