@@ -203,6 +203,9 @@ npm run test:cov
 docker compose -f docker-compose.test.yml up -d
 
 # 2. Spustit e2e testy
+V powershellu
+$env:DB_HOST="localhost"; $env:DB_PORT="5433"; $env:DB_USER="eshop"; $env:DB_PASSWORD="eshop"; $env:DB_NAME="eshop_test"; $env:NODE_ENV="test"; npm run test:e2e
+V Git Bashi
 DB_HOST=localhost DB_PORT=5433 DB_USER=eshop DB_PASSWORD=eshop DB_NAME=eshop_test NODE_ENV=test npm run test:e2e
 ```
 
